@@ -1,7 +1,0 @@
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\bin\Debug\NameMCTest.exe.config
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\bin\Debug\NameMCTest.exe
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\bin\Debug\NameMCTest.pdb
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\obj\Debug\NameMCTest.csprojAssemblyReference.cache
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\obj\Debug\NameMCTest.csproj.CoreCompileInputs.cache
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\obj\Debug\NameMCTest.exe
-Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\test\NameMCTest\NameMCTest\obj\Debug\NameMCTest.pdb
