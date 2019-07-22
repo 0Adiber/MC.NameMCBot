@@ -1,0 +1,8 @@
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\bin\Debug\NameMCBot.dll
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\bin\Debug\NameMCBot.pdb
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\bin\Debug\OQ.MineBot.PluginBase.dll
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\obj\Debug\NameMCBot.csprojAssemblyReference.cache
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\obj\Debug\NameMCBot.csproj.CoreCompileInputs.cache
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\obj\Debug\NameMCBot.csproj.CopyComplete
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\obj\Debug\NameMCBot.dll
+Z:\Adrian\Programmieren\Minecraft\Projects\namemcbot\bot\NameMCBot\NameMCBot\obj\Debug\NameMCBot.pdb
