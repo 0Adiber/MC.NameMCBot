@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace NameMCTest
 {
@@ -14,18 +11,17 @@ namespace NameMCTest
     {
         static void Main(string[] args)
         {
-            string site = GetPageAsString("https://de.namemc.com/search?q=MrKuh");
+            string site = dummerScheiss("https://de.namemc.com/search?q=MrKuh");
             
             int start = site.IndexOf("py-0");
             site = site.Substring(start, site.IndexOf("/main")-start);
 
             string[] parts = getHtmlSplitted(site);
-            List<string> result = new List<string>();
 
             foreach(string p in parts)
             {
                 if (String.IsNullOrWhiteSpace(p)) break;
-                result.Add(p);
+                Console.WriteLine(p);
             }
 
             Console.ReadKey();
@@ -58,6 +54,26 @@ namespace NameMCTest
                     content = reader.ReadToEnd();
             }
             return content;
+        }
+
+        public static string dummerScheiss(string url)
+        {
+            var request = (HttpWebRequest) WebRequest.Create(url);
+            request.Method = "GET";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
+            request.Credentials = CredentialCache.DefaultCredentials;
+
+            WebResponse response = request.GetResponse();
+
+            string responseFromServer = "";
+            using (Stream dataStream = response.GetResponseStream())
+            {
+                StreamReader reader = new StreamReader(dataStream);
+                responseFromServer = reader.ReadToEnd();
+            }
+
+            response.Close();
+            return responseFromServer;
         }
 
         public static string[] getHtmlSplitted(string text)

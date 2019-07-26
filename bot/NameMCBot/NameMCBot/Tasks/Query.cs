@@ -45,7 +45,7 @@ namespace NameMCBot.Tasks
                 if (!parts[1].Trim().StartsWith(".")) return;
 
                 string[] cmd = parts[1].Split(new char[] { ' ' });
-                if (!(cmd.Length != 2)) player.functions.Chat("/cc [NameMCBot] Command: '.nr <name>'");
+                if (!(cmd.Length != 2)) player.functions.Chat("/cc [NameMCBot] Befehl: '.nr <name>'");
 
                 string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1]);
 
@@ -73,28 +73,19 @@ namespace NameMCBot.Tasks
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
+            request.Credentials = CredentialCache.DefaultCredentials;
 
-            var content = String.Empty;
-            HttpStatusCode statusCode;
-            using (var response = request.GetResponse())
-            using (var stream = response.GetResponseStream())
+            WebResponse response = request.GetResponse();
+
+            string responseFromServer = "";
+            using (Stream dataStream = response.GetResponseStream())
             {
-                var contentType = response.ContentType;
-                Encoding encoding = null;
-                if (contentType != null)
-                {
-                    var match = Regex.Match(contentType, @"(?<=charset\=).*");
-                    if (match.Success)
-                        encoding = Encoding.GetEncoding(match.ToString());
-                }
-
-                encoding = encoding ?? Encoding.UTF8;
-
-                statusCode = ((HttpWebResponse)response).StatusCode;
-                using (var reader = new StreamReader(stream, encoding))
-                    content = reader.ReadToEnd();
+                StreamReader reader = new StreamReader(dataStream);
+                responseFromServer = reader.ReadToEnd();
             }
-            return content;
+
+            response.Close();
+            return responseFromServer;
         }
 
         public static string[] getHtmlSplitted(string text)
