@@ -42,28 +42,31 @@ namespace NameMCBot.Tasks
             {
                 if (!msg.Contains(":")) return;
                 string[] parts = msg.Split(new char[] { ':' });
-                if (!parts[1].Trim().StartsWith(".")) return;
+                if (!parts[1].Trim().StartsWith(".nr")) return;
 
-                string[] cmd = parts[1].Split(new char[] { ' ' });
+                string[] cmd = parts[1].Trim().Split(new char[] { ' ' });
                 if (!(cmd.Length != 2)) player.functions.Chat("/cc [NameMCBot] Befehl: '.nr <name>'");
 
                 string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1]);
 
+                Console.WriteLine(site);
+
                 int start = site.IndexOf("py-0");
                 site = site.Substring(start, site.IndexOf("/main") - start);
 
-                //List<string> result = new List<string>();
-
-                player.functions.Chat("/cc [NameMCBot] ~-~-~-~-~ \"" + cmd[1] + "\"~-~-~-~-~");
+                player.functions.Chat("/cc ");
+                player.functions.Chat("/cc ");
+                player.functions.Chat("/cc [NameMCBot] -- \"" + cmd[1] + "\" -- ");
 
                 foreach (string p in getHtmlSplitted(site))
                 {
                     if (String.IsNullOrWhiteSpace(p)) break;
-                    //result.Add(p);
                     player.functions.Chat("/cc - " + p);
                 }
 
-                player.functions.Chat("/cc [NameMCBot] ~-~-~-~-~ENDE~-~-~-~-~");
+                player.functions.Chat("/cc [NameMCBot] -- ENDE -- ");
+                player.functions.Chat("/cc ");
+                player.functions.Chat("/cc ");
 
             }
         }
@@ -74,6 +77,7 @@ namespace NameMCBot.Tasks
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
             request.Credentials = CredentialCache.DefaultCredentials;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
             WebResponse response = request.GetResponse();
 
@@ -90,7 +94,12 @@ namespace NameMCBot.Tasks
 
         public static string[] getHtmlSplitted(string text)
         {
+            var names = new List<string>();
+            var times = new List<string>();
             var list = new List<string>();
+
+            //
+            //names
             var pattern = "(<a|</a>)";
             var isInTag = false;
             var inTagValue = String.Empty;
@@ -105,7 +114,7 @@ namespace NameMCBot.Tasks
                 else if (subStr.Equals("</a>"))
                 {
                     isInTag = false;
-                    list.Add(inTagValue.Substring(inTagValue.LastIndexOf(">") + 1));
+                    names.Add(inTagValue.Substring(inTagValue.LastIndexOf(">") + 1));
                     continue;
                 }
 
@@ -114,12 +123,64 @@ namespace NameMCBot.Tasks
                     inTagValue = subStr;
                     continue;
                 }
-
-                //list.Add(subStr);
-
             }
-            list.RemoveAt(0);
+
+            //
+            //times
+            pattern = "(<time|</time>)";
+            isInTag = false;
+            inTagValue = String.Empty;
+
+
+            foreach (var subStr in Regex.Split(text, pattern))
+            {
+                if (subStr.Equals("<time"))
+                {
+                    isInTag = true;
+                    continue;
+                }
+                else if (subStr.Equals("</time>"))
+                {
+                    isInTag = false;
+                    times.Add(inTagValue.Substring(inTagValue.LastIndexOf(">") + 1));
+                    continue;
+                }
+
+                if (isInTag)
+                {
+                    inTagValue = subStr;
+                    continue;
+                }
+            }
+
+            //
+            //combine
+
+            names.RemoveAt(0);
+
+            int i = 0;
+            foreach (var n in names)
+            {
+                if (string.IsNullOrWhiteSpace(n)) break;
+                string t = (i < times.Count ? times[i++] : "").Replace("T", "@").Replace("-", ".");
+                list.Add(n + " - " + Reverse(t.Substring(0, t.IndexOf("@") == -1 ? t.Length : t.IndexOf("@"))));
+            }
+
+            string temp = list.Last();
+            list.RemoveAt(list.Count - 1);
+            list.Add(temp.Substring(0, temp.IndexOf(" - ")));
+
             return list.ToArray();
+        }
+
+        private static string Reverse(string s)
+        {
+            string[] parts = s.Split(new char[] { '.' });
+            if (parts.Length == 3)
+            {
+                return parts[2] + "." + parts[1] + "." + parts[0];
+            }
+            return "";
         }
 
     }

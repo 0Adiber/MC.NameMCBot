@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace NameMCTest
 {
@@ -11,16 +12,15 @@ namespace NameMCTest
     {
         static void Main(string[] args)
         {
-            string site = dummerScheiss("https://de.namemc.com/search?q=MrKuh");
+            string site = dummerScheiss("https://de.namemc.com/search?q=Adiber");
             
             int start = site.IndexOf("py-0");
             site = site.Substring(start, site.IndexOf("/main")-start);
 
             string[] parts = getHtmlSplitted(site);
 
-            foreach(string p in parts)
+            foreach(var p in parts)
             {
-                if (String.IsNullOrWhiteSpace(p)) break;
                 Console.WriteLine(p);
             }
 
@@ -62,6 +62,7 @@ namespace NameMCTest
             request.Method = "GET";
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
             request.Credentials = CredentialCache.DefaultCredentials;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
             WebResponse response = request.GetResponse();
 
@@ -78,7 +79,12 @@ namespace NameMCTest
 
         public static string[] getHtmlSplitted(string text)
         {
+            var names = new List<string>();
+            var times = new List<string>();
             var list = new List<string>();
+
+            //
+            //names
             var pattern = "(<a|</a>)";
             var isInTag = false;
             var inTagValue = String.Empty;
@@ -93,7 +99,7 @@ namespace NameMCTest
                 else if (subStr.Equals("</a>"))
                 {
                     isInTag = false;
-                    list.Add(inTagValue.Substring(inTagValue.LastIndexOf(">")+1));
+                    names.Add(inTagValue.Substring(inTagValue.LastIndexOf(">")+1));
                     continue;
                 }
 
@@ -102,12 +108,64 @@ namespace NameMCTest
                     inTagValue = subStr;
                     continue;
                 }
-
-                //list.Add(subStr);
-
             }
-            list.RemoveAt(0);
+
+            //
+            //times
+            pattern = "(<time|</time>)";
+            isInTag = false;
+            inTagValue = String.Empty;
+
+
+            foreach (var subStr in Regex.Split(text, pattern))
+            {
+                if (subStr.Equals("<time"))
+                {
+                    isInTag = true;
+                    continue;
+                }
+                else if (subStr.Equals("</time>"))
+                {
+                    isInTag = false;
+                    times.Add(inTagValue.Substring(inTagValue.LastIndexOf(">") + 1));
+                    continue;
+                }
+
+                if (isInTag)
+                {
+                    inTagValue = subStr;
+                    continue;
+                }
+            }
+
+            //
+            //combine
+
+            names.RemoveAt(0);
+
+            int i = 0;
+            foreach(var n in names)
+            {
+                if (string.IsNullOrWhiteSpace(n)) break;
+                string t = (i < times.Count ? times[i++] : "").Replace("T", "@").Replace("-", ".");
+                list.Add(n + " - " + Reverse(t.Substring(0, t.IndexOf("@") == -1 ? t.Length : t.IndexOf("@"))));
+            }
+
+            string temp = list.Last();
+            list.RemoveAt(list.Count - 1);
+            list.Add(temp.Substring(0, temp.IndexOf(" - ")));
+
             return list.ToArray();
+        }
+
+        private static string Reverse(string s)
+        {
+            string[] parts = s.Split(new char[] { '.' });
+            if (parts.Length == 3)
+            {
+                return parts[2] + "." + parts[1] + "." + parts[0];
+            }
+            return "";
         }
 
     }
