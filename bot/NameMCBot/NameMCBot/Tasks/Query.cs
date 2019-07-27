@@ -45,9 +45,14 @@ namespace NameMCBot.Tasks
                 if (!parts[1].Trim().StartsWith(".nr")) return;
 
                 string[] cmd = parts[1].Trim().Split(new char[] { ' ' });
-                if (!(cmd.Length != 2)) player.functions.Chat("/cc [NameMCBot] Befehl: '.nr <name>'");
+                if (cmd.Length != 2) return;
 
-                string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1]);
+                string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1].Trim());
+
+                if(site.Contains("Profile: 0 Ergebnisse"))
+                {
+                    player.functions.Chat("/cc [NameMCBot] Keine Ergebnisse zum Namen: " + cmd[1]);
+                }
 
                 Console.WriteLine(site);
 
