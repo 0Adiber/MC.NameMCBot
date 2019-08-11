@@ -52,9 +52,8 @@ namespace NameMCBot.Tasks
                 if(site.Contains("Profile: 0 Ergebnisse"))
                 {
                     player.functions.Chat("/cc [NameMCBot] Keine Ergebnisse zum Namen: " + cmd[1]);
+                    return;
                 }
-
-                Console.WriteLine(site);
 
                 int start = site.IndexOf("py-0");
                 site = site.Substring(start, site.IndexOf("/main") - start);
