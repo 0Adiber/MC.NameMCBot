@@ -47,6 +47,11 @@ namespace NameMCBot.Tasks
                 string[] cmd = parts[1].Trim().Split(new char[] { ' ' });
                 if (cmd.Length != 2) return;
 
+                if(cmd[1].Trim().Contains("."))
+                {
+                    player.functions.Chat("/cc [NameMCBot] Keine Punkte! Weil ich nicht weiß ob das vielleicht eine Server-IP ist.")
+                }
+
                 string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1].Trim());
 
                 if(site.Contains("Profile: 0 Ergebnisse"))
