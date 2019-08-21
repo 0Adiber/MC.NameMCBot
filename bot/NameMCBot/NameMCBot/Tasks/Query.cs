@@ -49,10 +49,22 @@ namespace NameMCBot.Tasks
 
                 if(cmd[1].Trim().Contains("."))
                 {
-                    player.functions.Chat("/cc [NameMCBot] Keine Punkte! Weil ich nicht weiß ob das vielleicht eine Server-IP ist.")
+                    player.functions.Chat("/cc [NameMCBot] Keine Punkte! Weil ich nicht weiß ob das vielleicht eine Server-IP ist.");
+                    return;
                 }
 
                 string site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1].Trim());
+
+                if(site.StartsWith("ERROR: "))
+                {
+                    player.functions.Chat("/cc [NameMCBot] " + site + " Zweiter Versuch..");
+                    site = GetPageAsString("https://de.namemc.com/search?q=" + cmd[1].Trim());
+                    if(site.StartsWith("ERROR: "))
+                    {
+                        player.functions.Chat("/cc [NameMCBot] Zweiter Versuch fehlgeschlagen. " + site);
+                        return;
+                    }
+                }
 
                 if(site.Contains("Profile: 0 Ergebnisse"))
                 {
@@ -63,19 +75,18 @@ namespace NameMCBot.Tasks
                 int start = site.IndexOf("py-0");
                 site = site.Substring(start, site.IndexOf("/main") - start);
 
-                player.functions.Chat("/cc ");
-                player.functions.Chat("/cc ");
                 player.functions.Chat("/cc [NameMCBot] -- \"" + cmd[1] + "\" -- ");
 
+                int cnt = 0;
                 foreach (string p in getHtmlSplitted(site))
                 {
                     if (String.IsNullOrWhiteSpace(p)) break;
                     player.functions.Chat("/cc - " + p);
+                    cnt++;
+                    if (cnt == 10) return;
                 }
 
                 player.functions.Chat("/cc [NameMCBot] -- ENDE -- ");
-                player.functions.Chat("/cc ");
-                player.functions.Chat("/cc ");
 
             }
         }
@@ -88,7 +99,12 @@ namespace NameMCBot.Tasks
             request.Credentials = CredentialCache.DefaultCredentials;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
-            WebResponse response = request.GetResponse();
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            if(response.StatusCode != HttpStatusCode.OK)
+            {
+                return "ERROR: " + response.StatusCode;
+            }
 
             string responseFromServer = "";
             using (Stream dataStream = response.GetResponseStream())
