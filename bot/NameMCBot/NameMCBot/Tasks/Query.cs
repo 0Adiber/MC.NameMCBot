@@ -45,7 +45,7 @@ namespace NameMCBot.Tasks
                 if (!parts[1].Trim().StartsWith(".nr")) return;
 
                 string[] cmd = parts[1].Trim().Split(new char[] { ' ' });
-                if (cmd.Length != 2) return;
+                if (cmd.Length < 2 || cmd.Length > 3) return;
 
                 if(cmd[1].Trim().Contains("."))
                 {
@@ -77,13 +77,17 @@ namespace NameMCBot.Tasks
 
                 player.functions.Chat("/cc [NameMCBot] -- \"" + cmd[1] + "\" -- ");
 
-                int cnt = 0;
-                foreach (string p in getHtmlSplitted(site))
+                string[] names = getHtmlSplitted(site);
+
+                int times = 0;
+                if(cmd.Length==3) Int32.TryParse(cmd[2].Trim(), out times);
+
+                if(names.Length < (10*(times-1))+1) times = 0;
+
+                for(int i = 10*times; i<10 && i<names.Length; i++)
                 {
-                    if (String.IsNullOrWhiteSpace(p)) break;
-                    player.functions.Chat("/cc - " + p);
-                    cnt++;
-                    if (cnt == 10) return;
+                    if (String.IsNullOrWhiteSpace(names[i])) break;
+                    player.functions.Chat("/cc - " + names[i]);
                 }
 
                 player.functions.Chat("/cc [NameMCBot] -- ENDE -- ");
