@@ -12,16 +12,37 @@ namespace NameMCTest
     {
         static void Main(string[] args)
         {
-            string site = dummerScheiss("https://de.namemc.com/search?q=Adiber");
+            string site = dummerScheiss("https://de.namemc.com/search?q=computiful1975");
             
             int start = site.IndexOf("py-0");
             site = site.Substring(start, site.IndexOf("/main")-start);
 
-            string[] parts = getHtmlSplitted(site);
+            string[] names = getHtmlSplitted(site);
 
-            foreach(var p in parts)
+            // getting page number
+            int times = 1;
+            Int32.TryParse("1 ".Trim(), out times);
+
+            if (names.Length < (10 * (times - 1)) + 1) times = (int)((names.Length - names.Length % 10) / 10)+1;
+
+            //output start
+            Console.WriteLine("/cc [NameMCBot] -- laasdhf -- ");
+
+            //outputting names based on page number
+            for (int i = 10 * (times-1); i < 10*times && i < names.Length; i++)
             {
-                Console.WriteLine(p);
+                if (String.IsNullOrWhiteSpace(names[i])) break;
+                Console.WriteLine("/cc - " + names[i]);
+            }
+
+            //output end "ende" or page number
+            if (names.Length <= 10 * times)
+            {
+                Console.WriteLine("/cc [NameMCBot] -- ENDE -- ");
+            }
+            else
+            {
+                Console.WriteLine("/cc [NameMCBot] --- " + times + " --- ");
             }
 
             Console.ReadKey();

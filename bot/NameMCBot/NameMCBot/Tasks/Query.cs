@@ -75,22 +75,34 @@ namespace NameMCBot.Tasks
                 int start = site.IndexOf("py-0");
                 site = site.Substring(start, site.IndexOf("/main") - start);
 
-                player.functions.Chat("/cc [NameMCBot] -- \"" + cmd[1] + "\" -- ");
-
                 string[] names = getHtmlSplitted(site);
 
-                int times = 0;
+                //getting page number
+                int times = 1;
                 if(cmd.Length==3) Int32.TryParse(cmd[2].Trim(), out times);
 
-                if(names.Length < (10*(times-1))+1) times = 0;
+                if (times < 1) times = 1;
 
-                for(int i = 10*times; i<10 && i<names.Length; i++)
+                if (names.Length < (10 * (times - 1)) + 1) times = (int)((names.Length - names.Length % 10) / 10) + 1;
+
+                //output start
+                player.functions.Chat("/cc [NameMCBot] -- \"" + cmd[1] + "\" -- ");
+
+                //outputting names based on page number
+                for (int i = 10 * (times - 1); i < 10 * times && i < names.Length; i++)
                 {
                     if (String.IsNullOrWhiteSpace(names[i])) break;
                     player.functions.Chat("/cc - " + names[i]);
                 }
 
-                player.functions.Chat("/cc [NameMCBot] -- ENDE -- ");
+                //output end "ende" or page number
+                if (names.Length <= 10 * times)
+                {
+                    player.functions.Chat("/cc [NameMCBot] -- ENDE -- ");
+                } else
+                {
+                    player.functions.Chat("/cc [NameMCBot] --- " + times + " --- ");
+                }
 
             }
         }
